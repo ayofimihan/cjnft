@@ -33,8 +33,7 @@
 }
 
 .button {
-  border-radius: 4px;
-  background-color: blue;
+  border-radius: 50px;
   border: none;
   color: #ffffff;
   font-size: 15px;
@@ -42,6 +41,15 @@
   width: 200px;
   cursor: pointer;
   margin-bottom: 2%;
+  border: 2px double transparent;
+  background-image: linear-gradient(rgb(13, 14, 33), rgb(5, 7, 7)),
+    radial-gradient(circle at left top, rgb(1, 110, 218), rgb(217, 0, 192));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+.btnglow:hover {
+  box-shadow: rgba(111,76,255,0.5) 0px 0px 20px 0px;
 }
 @media (max-width: 1000px) {
   .main {
