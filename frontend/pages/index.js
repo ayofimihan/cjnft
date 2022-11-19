@@ -74,8 +74,10 @@ export default function Home() {
       );
       //set presaleended to the boolean value of _haspresaleended
       setpresaleEnded(_hasPresaleEnded);
+      return _hasPresaleEnded
     } catch (error) {
       console.error(error);
+      return false
     }
   };
 
@@ -173,7 +175,7 @@ export default function Home() {
       );
       //render a button to start the presale
     }
-    if (!isOwner && !presaleStarted) {
+    if (!presaleStarted) {
       return (
         <div>
           {" "}
@@ -183,11 +185,11 @@ export default function Home() {
           </h4>
         </div>
       );
-      //render div to say presale hasnt sstarted yet
+      //render div to say presale hasnt started yet
     }
     if (presaleStarted && !presaleEnded) {
       return (
-        <button className={`${styles.button} ${styles.btnglow}`} onClick={""}>
+        <button className={`${styles.button} ${styles.btnglow}`} onClick={presaleMint}>Presale Mint
           {" "}
         </button>
       );
@@ -195,6 +197,9 @@ export default function Home() {
       //check if they are in whitelist
     }
     if (presaleEnded) {
+      return(
+<> <div className={styles.description} > public mint is live!</div>
+<button className={styles.button} onClick={publicMint}> Public Mint</button></>      )
       //ngmi text try public
     }
   };
