@@ -10,14 +10,18 @@ contract CJ is ERC721Enumerable, Ownable {
     string _baseTokenURI;
     IWhitelist whitelist;
     bool public presaleStarted;
-    uint public presaleEnded;
+    uint256 public presaleEnded;
     uint public maxTokenIds = 20;
     uint public tokenIds;
     uint public price = 0.01 ether;
     bool public paused;
 
 
+    modifier onlyWhenNotPaused() {
+        require(!paused, "contract currently paused");
+        _;
 
+    }
 
     constructor (string memory baseURI, address whitelistContract) ERC721('California jacuzzi', "CJ"){
 
@@ -28,11 +32,11 @@ contract CJ is ERC721Enumerable, Ownable {
 
     function startPresale() public onlyOwner{
         presaleStarted = true;
-        presaleEnded = block.timestamp + 5 minutes;
+        presaleEnded = block.timestamp + 60 minutes;
 
     }
 
-    function presaleMint() public payable onlyOwner onlyWhenPaused{
+    function presaleMint() public payable onlyOwner onlyWhenNotPaused{
         require(presaleStarted && block.timestamp < presaleEnded, "presale ended, mint with the regulars");
         require(whitelist.whitelistedAddresses(msg.sender), "You are not whitelisted");
         require(tokenIds < maxTokenIds, "limit reached");
@@ -44,7 +48,7 @@ contract CJ is ERC721Enumerable, Ownable {
 
     }
 
-    function mint() public payable onlyWhenPaused{
+    function mint() public payable onlyWhenNotPaused{
         require(presaleStarted && block.timestamp >= presaleEnded, "whitelist mint still on");
         require(tokenIds < maxTokenIds, "limit reached");
         require(msg.value >= price, "broke??");
@@ -67,14 +71,10 @@ contract CJ is ERC721Enumerable, Ownable {
 
    
 
-    modifier onlyWhenPaused() {
-        require(paused, "contract not paused");
-        _;
-
-    }
+   
 
 
-    function setPaused(bool val) public {
+    function setPaused(bool val) public onlyOwner{
         paused = val; 
     }
 

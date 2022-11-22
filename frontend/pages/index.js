@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "../styles/Home.module.css";
-import { Contract, ethers, Signer, utils } from "ethers";
-import Web3Modal, { getProviderDescription } from "web3modal";
+import { Contract, ethers, utils } from "ethers";
+import Web3Modal from "web3modal";
 import { CONTRACT_ADDRESS, ABI } from "../konstants";
 
 export default function Home() {
   const [walletConnected, setWalletConnected] = useState(false);
   const [presaleStarted, setPresaleStarted] = useState(false);
   const [presaleEnded, setpresaleEnded] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [isOwner, setisOwner] = useState(false);
   const web3ModalRef = useRef();
 
@@ -74,10 +75,10 @@ export default function Home() {
       );
       //set presaleended to the boolean value of _haspresaleended
       setpresaleEnded(_hasPresaleEnded);
-      return _hasPresaleEnded
+      return _hasPresaleEnded;
     } catch (error) {
       console.error(error);
-      return false
+      return false;
     }
   };
 
@@ -106,7 +107,7 @@ export default function Home() {
       //instance of the contract
       const nftContract = new Contract(CONTRACT_ADDRESS, ABI, signer);
       const txn = await nftContract.startPresale();
-      await txn();
+      await txn.wait();
       setPresaleStarted(true);
     } catch (error) {
       console.log(error);
@@ -126,7 +127,6 @@ export default function Home() {
       return _isPresaleStarted;
     } catch (error) {
       console.log(error);
-      return false;
     }
   };
 
@@ -135,7 +135,7 @@ export default function Home() {
       await getProviderOrSigner();
       setWalletConnected(true);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -152,57 +152,63 @@ export default function Home() {
       const signer = web3Provider.getSigner();
       return signer;
     }
-    return provider;
+    return web3Provider;
   };
 
-  const renderBody = () => {
+  function renderBody() {
+    // If wallet is not connected, return a button which allows them to connect their wllet
     if (!walletConnected) {
       return (
         <button onClick={connectWallet} className={styles.button}>
-          Connect Wallet
+          Connect wallet
         </button>
       );
     }
+
+    // If we are currently waiting for something, return a loading button
+    if (loading) {
+      return <button className={styles.button}>Loading...</button>;
+    }
+    // If connected user is the owner, and presale hasnt started yet, allow them to start the presale
     if (isOwner && !presaleStarted) {
       return (
-        <button
-          className={`${styles.button} ${styles.btnglow}`}
-          onClick={startPresale}
-        >
-          {" "}
-          Start Presale
+        <button className={styles.button} onClick={startPresale}>
+          Start Presale.
         </button>
       );
-      //render a button to start the presale
     }
+
+    // If connected user is not the owner but presale hasn't started yet, tell them that
     if (!presaleStarted) {
       return (
         <div>
-          {" "}
-          <h4 className={styles.description}>
-            {" "}
-            Presale mint hasn't started, come back soon.
-          </h4>
+          <div className={styles.description}>Presale hasnt started, come back later.</div>
         </div>
       );
-      //render div to say presale hasnt started yet
     }
+
+    // If presale started, but hasn't ended yet, allow for minting during the presale period
     if (presaleStarted && !presaleEnded) {
       return (
-        <button className={`${styles.button} ${styles.btnglow}`} onClick={presaleMint}>Presale Mint
-          {" "}
-        </button>
+        <div>
+          <div className={styles.description}>Whitelist mint is live! </div>
+          <button className={styles.button} onClick={presaleMint}>
+            Whitelist Mint 🚀
+          </button>
+        </div>
       );
-      //render a mint button
-      //check if they are in whitelist
     }
-    if (presaleEnded) {
-      return(
-<> <div className={styles.description} > public mint is live!</div>
-<button className={styles.button} onClick={publicMint}> Public Mint</button></>      )
-      //ngmi text try public
+
+    // If presale started and has ended, its time for public minting
+    if (presaleStarted && presaleEnded) {
+      return (<>
+        <h4 className={styles.description}> Public mint is live, hurry!</h4>
+        <button className={styles.button} onClick={publicMint}>
+          Public Mint 🚀
+        </button></>
+      );
     }
-  };
+  }
 
   return <div className={styles.main}>{renderBody()}</div>;
 }
