@@ -3,6 +3,8 @@ import styles from "../styles/Home.module.css";
 import { Contract, ethers, utils } from "ethers";
 import Web3Modal from "web3modal";
 import { CONTRACT_ADDRESS, ABI } from "../konstants";
+import Head from "next/head";
+import { Audio } from "react-loader-spinner";
 
 export default function Home() {
   const [walletConnected, setWalletConnected] = useState(false);
@@ -10,15 +12,34 @@ export default function Home() {
   const [presaleEnded, setpresaleEnded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isOwner, setisOwner] = useState(false);
+  const [numTokensMinted, setNumTokensMinted] = useState("");
   const web3ModalRef = useRef();
+
+  const loader = () => (
+    <div>
+      <Audio width="100" height="100" color="blue" />
+    </div>
+  );
 
   const onPageLoad = async () => {
     await connectWallet();
     await getowner();
+    await getNumOfTokensMinted();
     const presaleStarted = await checkIfPresaleStarted();
     if (presaleStarted) {
       await checkIfPresaleEnded();
     }
+
+    setInterval(async () => {
+      await getNumOfTokensMinted();
+    }, 4 * 1000);
+
+    setInterval(async () => {
+      const presaleStarted = await checkIfPresaleStarted();
+      if (presaleStarted) {
+        await checkIfPresaleEnded();
+      }
+    }, 4 * 1000);
   };
 
   useEffect(() => {
@@ -32,7 +53,20 @@ export default function Home() {
     }
   }, []);
 
+  const getNumOfTokensMinted = async () => {
+    try {
+      const provider = await getProviderOrSigner();
+      const nftContract = new Contract(CONTRACT_ADDRESS, ABI, provider);
+      const numTokenIds = await nftContract.tokenIds();
+      setNumTokensMinted(numTokenIds.toString());
+      console.log(numTokensMinted);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const publicMint = async () => {
+    setLoading(true);
     try {
       const signer = await getProviderOrSigner(true);
       const nftContract = new Contract(CONTRACT_ADDRESS, ABI, signer);
@@ -44,9 +78,11 @@ export default function Home() {
     } catch (error) {
       console.error(error);
     }
+    setLoading(false);
   };
 
   const presaleMint = async () => {
+    setLoading(true);
     try {
       const signer = await getProviderOrSigner(true);
       const nftContract = new Contract(CONTRACT_ADDRESS, ABI, signer);
@@ -58,6 +94,7 @@ export default function Home() {
     } catch (error) {
       console.error(error);
     }
+    setLoading(false);
   };
 
   const checkIfPresaleEnded = async () => {
@@ -101,6 +138,7 @@ export default function Home() {
   };
 
   const startPresale = async () => {
+    setLoading(true);
     try {
       //get the signer from the getproviderorsigner function
       const signer = await getProviderOrSigner(true);
@@ -112,6 +150,7 @@ export default function Home() {
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
   };
 
   const checkIfPresaleStarted = async () => {
@@ -166,9 +205,9 @@ export default function Home() {
     }
 
     // If we are currently waiting for something, return a loading button
-    if (loading) {
-      return <button className={styles.button}>Loading...</button>;
-    }
+    // if (loading) {
+    //   loader();
+    // }
     // If connected user is the owner, and presale hasnt started yet, allow them to start the presale
     if (isOwner && !presaleStarted) {
       return (
@@ -182,7 +221,9 @@ export default function Home() {
     if (!presaleStarted) {
       return (
         <div>
-          <div className={styles.description}>Presale hasnt started, come back later.</div>
+          <div className={styles.description}>
+            Presale hasnt started, come back later.
+          </div>
         </div>
       );
     }
@@ -192,23 +233,50 @@ export default function Home() {
       return (
         <div>
           <div className={styles.description}>Whitelist mint is live! </div>
-          <button className={styles.button} onClick={presaleMint}>
+          
+          {loading ? loader() : <button className={styles.button} onClick={presaleMint}>
             Whitelist Mint 🚀
-          </button>
+          </button>}
         </div>
       );
     }
 
     // If presale started and has ended, its time for public minting
     if (presaleStarted && presaleEnded) {
-      return (<>
-        <h4 className={styles.description}> Public mint is live, hurry!</h4>
-        <button className={styles.button} onClick={publicMint}>
-          Public Mint 🚀
-        </button></>
+      return (
+        <>
+          <h4 className={styles.description}> Public mint is live, hurry!</h4>
+          <button className={styles.button} onClick={publicMint}>
+            Public Mint 🚀
+          </button>
+        </>
       );
     }
   }
-
-  return <div className={styles.main}>{renderBody()}</div>;
+  return (
+    <div>
+      <Head>
+        <title> Cj nft</title>
+      </Head>
+      <div className={styles.main}>
+        {" "}
+        <div>
+          <h2 className={styles.title}> Welcome to California Jacuzzi</h2>
+          <div className={styles.description}>
+            {" "}
+            California jacuzzi NFT is a collection for fuckers in Cj{" "}
+          </div>
+          <div className={styles.description}>
+            {" "}
+            {numTokensMinted}/20 minted!
+          </div>
+          {renderBody()}
+        </div>
+        <img className={styles.image} src="/devv.svg" />
+      </div>
+      <footer className={styles.footer}> 0x65ch</footer>
+    </div>
+  );
 }
+
+// return <div className={styles.main}>{renderBody()}</div>;
