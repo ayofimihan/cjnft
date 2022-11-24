@@ -4,7 +4,7 @@ import { Contract, ethers, utils } from "ethers";
 import Web3Modal from "web3modal";
 import { CONTRACT_ADDRESS, ABI } from "../konstants";
 import Head from "next/head";
-import { Audio } from "react-loader-spinner";
+import { BallTriangle } from "react-loader-spinner";
 
 export default function Home() {
   const [walletConnected, setWalletConnected] = useState(false);
@@ -17,7 +17,14 @@ export default function Home() {
 
   const loader = () => (
     <div>
-      <Audio width="100" height="100" color="blue" />
+      {/* <Audio width="100" height="100" color="blue" /> */}
+      <BallTriangle
+        height={100}
+        width={100}
+        radius={5}
+        color="#4fa94d"
+        ariaLabel="ball-triangle-loading"
+      />
     </div>
   );
 
@@ -70,7 +77,7 @@ export default function Home() {
     try {
       const signer = await getProviderOrSigner(true);
       const nftContract = new Contract(CONTRACT_ADDRESS, ABI, signer);
-      const txn = await nftContract.publicMint({
+      const txn = await nftContract.mint({
         value: utils.parseEther("0.01"),
       });
       await txn.wait();
@@ -233,10 +240,14 @@ export default function Home() {
       return (
         <div>
           <div className={styles.description}>Whitelist mint is live! </div>
-          
-          {loading ? loader() : <button className={styles.button} onClick={presaleMint}>
-            Whitelist Mint 🚀
-          </button>}
+
+          {loading ? (
+            loader()
+          ) : (
+            <button className={styles.button} onClick={presaleMint}>
+              Whitelist Mint 🚀
+            </button>
+          )}
         </div>
       );
     }
@@ -246,9 +257,14 @@ export default function Home() {
       return (
         <>
           <h4 className={styles.description}> Public mint is live, hurry!</h4>
-          <button className={styles.button} onClick={publicMint}>
-            Public Mint 🚀
-          </button>
+          {loading ? (
+            loader()
+          ) : (
+            <button className={styles.button} onClick={publicMint}>
+              {" "}          Public Mint 🚀
+
+            </button>
+          )}
         </>
       );
     }
