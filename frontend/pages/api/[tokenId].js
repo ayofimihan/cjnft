@@ -4,7 +4,7 @@ export default function handler(req, res) {
   const tokenId = req.query.tokenId;
   const name = `California Jacuzzi #${tokenId}`;
   const description = `California jacuzzi NFT is a collection for fuckers in Cj`;
-  const image = `https://raw.githubusercontent.com/ayofimihan/cjnft/master/frontend/public/${Number(
+  const image = `https://raw.githubusercontent.com/ayofimihan/cjnft/master/frontend/public/${(
     tokenId
   )}.png`;
 
