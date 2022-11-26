@@ -4,7 +4,7 @@ import { Contract, ethers, utils } from "ethers";
 import Web3Modal from "web3modal";
 import { CONTRACT_ADDRESS, ABI } from "../konstants";
 import Head from "next/head";
-import { BallTriangle } from "react-loader-spinner";
+import { Vortex } from "react-loader-spinner";
 
 export default function Home() {
   const [walletConnected, setWalletConnected] = useState(false);
@@ -17,14 +17,22 @@ export default function Home() {
 
   const loader = () => (
     <div>
-      {/* <Audio width="100" height="100" color="blue" /> */}
-      <BallTriangle
+      {/* <BallTriangle
         height={100}
         width={100}
         radius={5}
         color="#4fa94d"
         ariaLabel="ball-triangle-loading"
-      />
+      /> */}
+      <Vortex
+  visible={true}
+  height="80"
+  width="80"
+  ariaLabel="vortex-loading"
+  wrapperStyle={{}}
+  wrapperClass="vortex-wrapper"
+  colors={['red', 'green', 'blue', 'yellow', 'orange', 'purple']}
+/>
     </div>
   );
 
