@@ -17,13 +17,6 @@ export default function Home() {
 
   const loader = () => (
     <div>
-      {/* <BallTriangle
-        height={100}
-        width={100}
-        radius={5}
-        color="#4fa94d"
-        ariaLabel="ball-triangle-loading"
-      /> */}
       <Vortex
   visible={true}
   height="80"
