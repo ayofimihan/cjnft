@@ -14,12 +14,22 @@
   justify-content: center;
   align-items: center;
 }
+.header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.navLinks{
+  text-decoration: none;
+  list-style-type: none;
+}
 
 .image {
   width: 40%;
   height: 30%;
   /* margin-left: 10%; */
 }
+
 
 .title {
   font-size: 2rem;
@@ -48,6 +58,20 @@
   background-clip: padding-box, border-box;
 }
 
+.btnAddress {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 18px;
+  padding: 5px 9px;
+  margin: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  border-radius: 50px;
+  background-color: pink;
+  border: 1px dotted black;
+  color: black
+}
+
 .btnglow:hover {
   box-shadow: rgba(111,76,255,0.5) 0px 0px 20px 0px;
 }
@@ -59,3 +83,4 @@
     align-items: center;
   }
 }
+

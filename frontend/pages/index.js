@@ -13,6 +13,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [isOwner, setisOwner] = useState(false);
   const [numTokensMinted, setNumTokensMinted] = useState("");
+  const [connectedAddress, setConnectedAddress] = useState("");
   const web3ModalRef = useRef();
 
   const loader = () => (
@@ -32,7 +33,7 @@ export default function Home() {
   const onPageLoad = async () => {
     await connectWallet();
     await getowner();
-    await getConnectedAddress()
+    await getConnectedAddress();
     await getNumOfTokensMinted();
     const presaleStarted = await checkIfPresaleStarted();
     if (presaleStarted) {
@@ -42,6 +43,9 @@ export default function Home() {
     setInterval(async () => {
       await getNumOfTokensMinted();
     }, 4 * 1000);
+    setInterval(async () => {
+      await getConnectedAddress();
+    }, 5 * 1000);
 
     setInterval(async () => {
       const presaleStarted = await checkIfPresaleStarted();
@@ -148,10 +152,11 @@ export default function Home() {
 
   const getConnectedAddress = async () => {
     try {
-      const signer = getProviderOrSigner(true);
+      const signer = await getProviderOrSigner(true);
+      // const nftContract = new Contract(CONTRACT_ADDRESS, ABI, signer);
       const connectedAddy = await signer.getAddress();
-      console.log(connectedAddy);
-      return connectedAddy;
+      setConnectedAddress(connectedAddy);
+      console.log(`connectedAdddress: ${connectedAddy}`);
     } catch (error) {
       console.log(error);
     }
@@ -287,15 +292,28 @@ export default function Home() {
       <Head>
         <title> Cj nft</title>
       </Head>
+
       <div className={styles.main}>
         {" "}
         <div>
+          <header className={styles.header}>
+            <span>チャンピオン</span>
+            <nav className={styles.nav}>
+              <ul className={styles.navLinks}>
+                <li>
+                  {" "}
+                  <button className={`${styles.btnAddress} ${styles.btnglow}`}>
+                    🤖{connectedAddress.slice(0, 7)}...
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </header>
           <h2 className={styles.title}> Welcome to California Jacuzzi</h2>
           <div className={styles.description}>
             {" "}
             California jacuzzi NFT is a collection for fuckers in Cj{" "}
           </div>
-          <div> hello {getConnectedAddress}</div>
           <div className={styles.description}>
             {" "}
             {numTokensMinted}/20 minted!
@@ -308,4 +326,3 @@ export default function Home() {
     </div>
   );
 }
-
