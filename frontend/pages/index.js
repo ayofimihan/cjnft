@@ -18,20 +18,21 @@ export default function Home() {
   const loader = () => (
     <div>
       <Vortex
-  visible={true}
-  height="80"
-  width="80"
-  ariaLabel="vortex-loading"
-  wrapperStyle={{}}
-  wrapperClass="vortex-wrapper"
-  colors={['red', 'green', 'blue', 'yellow', 'orange', 'purple']}
-/>
+        visible={true}
+        height="80"
+        width="80"
+        ariaLabel="vortex-loading"
+        wrapperStyle={{}}
+        wrapperClass="vortex-wrapper"
+        colors={["red", "green", "blue", "yellow", "orange", "purple"]}
+      />
     </div>
   );
 
   const onPageLoad = async () => {
     await connectWallet();
     await getowner();
+    await getConnectedAddress()
     await getNumOfTokensMinted();
     const presaleStarted = await checkIfPresaleStarted();
     if (presaleStarted) {
@@ -140,6 +141,17 @@ export default function Home() {
       if (owner.toLowerCase() === connectedAddy.toLowerCase()) {
         setisOwner(true);
       }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getConnectedAddress = async () => {
+    try {
+      const signer = getProviderOrSigner(true);
+      const connectedAddy = await signer.getAddress();
+      console.log(connectedAddy);
+      return connectedAddy;
     } catch (error) {
       console.log(error);
     }
@@ -262,8 +274,8 @@ export default function Home() {
             loader()
           ) : (
             <button className={styles.button} onClick={publicMint}>
-              {" "}          Public Mint 🚀
-
+              {" "}
+              Public Mint 🚀
             </button>
           )}
         </>
@@ -283,6 +295,7 @@ export default function Home() {
             {" "}
             California jacuzzi NFT is a collection for fuckers in Cj{" "}
           </div>
+          <div> hello {getConnectedAddress}</div>
           <div className={styles.description}>
             {" "}
             {numTokensMinted}/20 minted!
@@ -296,4 +309,3 @@ export default function Home() {
   );
 }
 
-// return <div className={styles.main}>{renderBody()}</div>;
