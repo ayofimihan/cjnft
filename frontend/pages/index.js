@@ -14,6 +14,7 @@ export default function Home() {
   const [isOwner, setisOwner] = useState(false);
   const [numTokensMinted, setNumTokensMinted] = useState("");
   const [connectedAddress, setConnectedAddress] = useState("");
+  const [currentHash, setCurrentHash] = useState('')
   const web3ModalRef = useRef();
 
   const loader = () => (
@@ -87,6 +88,12 @@ export default function Home() {
         value: utils.parseEther("0.01"),
       });
       await txn.wait();
+      const xx = txn.hash
+      setCurrentHash(xx)
+
+      console.log(xx)
+      showGoerliTxn();
+
       alert("successfully minted!");
     } catch (error) {
       console.error(error);
@@ -162,6 +169,14 @@ export default function Home() {
     }
   };
 
+  const formatAddress = (address) =>{
+    const displayCount = 5;
+    const addressLength = address.length;
+    const prefix = address.slice(0,displayCount)
+    const suffix = address.slice(addressLength - displayCount + 1, addressLength)
+    return `${prefix}...${suffix}`
+
+  }
   const startPresale = async () => {
     setLoading(true);
     try {
@@ -218,6 +233,14 @@ export default function Home() {
     }
     return web3Provider;
   };
+
+  const showGoerliTxn = () =>{
+    if (currentHash){
+      return (
+        <div> <a href={`https://goerli.etherscan.io/tx/${currentHash}`}>hash </a></div>
+      )
+    }
+  }
 
   function renderBody() {
     // If wallet is not connected, return a button which allows them to connect their wllet
@@ -303,7 +326,7 @@ export default function Home() {
                 <li>
                   {" "}
                   <button className={`${styles.btnAddress} ${styles.btnglow}`}>
-                    🤖{connectedAddress.slice(0, 7)}...
+                    🤖{formatAddress(connectedAddress)}
                   </button>
                 </li>
               </ul>
@@ -319,6 +342,7 @@ export default function Home() {
             {numTokensMinted}/20 minted!
           </div>
           {renderBody()}
+          {showGoerliTxn()}
         </div>
         <img className={styles.image} src="/devv.svg" />
       </div>
