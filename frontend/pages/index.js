@@ -18,9 +18,13 @@ export default function Home() {
   const [currentHash, setCurrentHash] = useState("");
   const web3ModalRef = useRef();
 
-  const successToast = () => toast.success("Successfully minted 1 CJ!");
+  const successToast = () =>
+    toast("Successfully minted 1 CJ!", {
+      icon: "🤖",
+    });
   const presaleToast = () => toast.success("Presale Started!");
-
+  const failureToast = () =>
+    toast.error('Txn rejected! Failed to mint')
 
   const loader = () => (
     <div>
@@ -101,6 +105,7 @@ export default function Home() {
       showGoerliTxn();
       successToast();
     } catch (error) {
+      failureToast()
       console.error(error);
     }
     setLoading(false);
@@ -198,7 +203,7 @@ export default function Home() {
       const txn = await nftContract.startPresale();
       await txn.wait();
       setPresaleStarted(true);
-      presaleToast()
+      presaleToast();
     } catch (error) {
       console.log(error);
     }
