@@ -5,6 +5,7 @@ import Web3Modal from "web3modal";
 import { CONTRACT_ADDRESS, ABI } from "../konstants";
 import Head from "next/head";
 import { Vortex } from "react-loader-spinner";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Home() {
   const [walletConnected, setWalletConnected] = useState(false);
@@ -14,8 +15,12 @@ export default function Home() {
   const [isOwner, setisOwner] = useState(false);
   const [numTokensMinted, setNumTokensMinted] = useState("");
   const [connectedAddress, setConnectedAddress] = useState("");
-  const [currentHash, setCurrentHash] = useState('')
+  const [currentHash, setCurrentHash] = useState("");
   const web3ModalRef = useRef();
+
+  const successToast = () => toast.success("Successfully minted 1 CJ!");
+  const presaleToast = () => toast.success("Presale Started!");
+
 
   const loader = () => (
     <div>
@@ -33,9 +38,11 @@ export default function Home() {
 
   const onPageLoad = async () => {
     await connectWallet();
+
     await getowner();
     await getConnectedAddress();
     await getNumOfTokensMinted();
+
     const presaleStarted = await checkIfPresaleStarted();
     if (presaleStarted) {
       await checkIfPresaleEnded();
@@ -88,13 +95,11 @@ export default function Home() {
         value: utils.parseEther("0.01"),
       });
       await txn.wait();
-      const xx = txn.hash
-      setCurrentHash(xx)
-
-      console.log(xx)
+      const hash = txn.hash;
+      setCurrentHash(hash);
+      console.log(hash);
       showGoerliTxn();
-
-      alert("successfully minted!");
+      successToast();
     } catch (error) {
       console.error(error);
     }
@@ -110,7 +115,11 @@ export default function Home() {
         value: utils.parseEther("0.01"),
       });
       await txn.wait();
-      alert("minted successfully!");
+      const hash = txn.hash;
+      setCurrentHash(hash);
+      console.log(hash);
+      showGoerliTxn();
+      successToast();
     } catch (error) {
       console.error(error);
     }
@@ -169,14 +178,16 @@ export default function Home() {
     }
   };
 
-  const formatAddress = (address) =>{
+  const formatAddress = (address) => {
     const displayCount = 5;
     const addressLength = address.length;
-    const prefix = address.slice(0,displayCount)
-    const suffix = address.slice(addressLength - displayCount + 1, addressLength)
-    return `${prefix}...${suffix}`
-
-  }
+    const prefix = address.slice(0, displayCount);
+    const suffix = address.slice(
+      addressLength - displayCount + 1,
+      addressLength
+    );
+    return `${prefix}...${suffix}`;
+  };
   const startPresale = async () => {
     setLoading(true);
     try {
@@ -187,6 +198,7 @@ export default function Home() {
       const txn = await nftContract.startPresale();
       await txn.wait();
       setPresaleStarted(true);
+      presaleToast()
     } catch (error) {
       console.log(error);
     }
@@ -234,13 +246,22 @@ export default function Home() {
     return web3Provider;
   };
 
-  const showGoerliTxn = () =>{
-    if (currentHash){
+  const showGoerliTxn = () => {
+    if (currentHash) {
       return (
-        <div> <a href={`https://goerli.etherscan.io/tx/${currentHash}`}>hash </a></div>
-      )
+        <div>
+          {" "}
+          <a
+            className={styles.link}
+            href={`https://goerli.etherscan.io/tx/${currentHash}`}
+            target={"_blank"}
+          >
+            View Txn on etherscan🎉🎉
+          </a>
+        </div>
+      );
     }
-  }
+  };
 
   function renderBody() {
     // If wallet is not connected, return a button which allows them to connect their wllet
@@ -317,7 +338,9 @@ export default function Home() {
       </Head>
 
       <div className={styles.main}>
-        {" "}
+        <div>
+          <Toaster />
+        </div>{" "}
         <div>
           <header className={styles.header}>
             <span>チャンピオン</span>
@@ -344,6 +367,7 @@ export default function Home() {
           {renderBody()}
           {showGoerliTxn()}
         </div>
+        <div> </div>
         <img className={styles.image} src="/devv.svg" />
       </div>
       <footer className={styles.footer}> 0x65ch</footer>

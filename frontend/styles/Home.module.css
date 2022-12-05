@@ -72,6 +72,11 @@
   color: black
 }
 
+.link {
+  text-decoration: underline;
+  color: rgb(197,191,0);
+}
+
 .btnglow:hover {
   box-shadow: rgba(111,76,255,0.5) 0px 0px 20px 0px;
 }
