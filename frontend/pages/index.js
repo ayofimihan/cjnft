@@ -23,6 +23,7 @@ export default function Home() {
       icon: "🤖",
     });
   const presaleToast = () => toast.success("Presale Started!");
+  //catch error return toast
   const failureToast = () =>
     toast.error('Txn rejected! Failed to mint')
 
