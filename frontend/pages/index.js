@@ -43,7 +43,6 @@ export default function Home() {
 
   const onPageLoad = async () => {
     await connectWallet();
-
     await getowner();
     await getConnectedAddress();
     await getNumOfTokensMinted();
@@ -55,17 +54,18 @@ export default function Home() {
 
     setInterval(async () => {
       await getNumOfTokensMinted();
-    }, 4 * 1000);
-    setInterval(async () => {
-      await getConnectedAddress();
-    }, 5 * 1000);
+    }, 2 * 1000);
+    
 
     setInterval(async () => {
       const presaleStarted = await checkIfPresaleStarted();
       if (presaleStarted) {
         await checkIfPresaleEnded();
       }
-    }, 4 * 1000);
+    }, 2 * 1000);
+    setInterval(async () => {
+      await getConnectedAddress();
+    }, 5 * 1000);
   };
 
   useEffect(() => {
@@ -127,6 +127,7 @@ export default function Home() {
       showGoerliTxn();
       successToast();
     } catch (error) {
+      failureToast()
       console.error(error);
     }
     setLoading(false);
@@ -279,10 +280,7 @@ export default function Home() {
       );
     }
 
-    // If we are currently waiting for something, return a loading button
-    // if (loading) {
-    //   loader();
-    // }
+   
     // If connected user is the owner, and presale hasnt started yet, allow them to start the presale
     if (isOwner && !presaleStarted) {
       return (
@@ -373,7 +371,6 @@ export default function Home() {
           {renderBody()}
           {showGoerliTxn()}
         </div>
-        <div> </div>
         <img className={styles.image} src="/devv.svg" />
       </div>
       <footer className={styles.footer}> 0x65ch</footer>
