@@ -46,6 +46,7 @@ export default function Home() {
     await getowner();
     await getConnectedAddress();
     await getNumOfTokensMinted();
+    renderBody();
 
     const presaleStarted = await checkIfPresaleStarted();
     if (presaleStarted) {
